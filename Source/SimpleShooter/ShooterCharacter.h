@@ -34,6 +34,8 @@ private:
 	void MoveRight(float AxisValue); // cntrl + shift + p 
 	void LookUpRate(float AxisValue);
 	void LookRightRate(float AxisValue);
+	
+	void Shoot();
 
 	UPROPERTY(EditAnyWhere)
 	float RotationRate = 10;
@@ -43,4 +45,5 @@ private:
 
 	UPROPERTY()
 	AGun* Gun;
+
 };
