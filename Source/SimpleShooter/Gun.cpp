@@ -5,6 +5,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GamePlayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "Engine/DamageEvents.h"
+
 
 AGun::AGun()
 {
@@ -71,6 +73,13 @@ void AGun::PullTrigger()
             Hit.ImpactPoint, 
             ShotDirection.Rotation()
         );
+        
+        AActor* HitActor = Hit.GetActor();
+        if(HitActor != nullptr)
+        {
+            FPointDamageEvent DamageEvent(Damage, Hit , ShotDirection , nullptr ); 
+            HitActor->TakeDamage(Damage, DamageEvent, OwnerPawnController , this);
+        }
 
     }
 }
