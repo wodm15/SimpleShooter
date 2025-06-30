@@ -2,27 +2,37 @@
 
 #include "ShooterAIController.h"
 #include "Kismet/GameplayStatics.h" 
+#include "BehaviorTree/BlackBoardComponent.h"
 
 void AShooterAIController::BeginPlay()
 {
     Super::BeginPlay();
+    if(AIBehavior != nullptr)
+    {
+        RunBehaviorTree(AIBehavior);
+
+        APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+        GetBlackboardComponent()->SetValueAsVector(TEXT("StartLocation"), GetPawn()->GetActorLocation() );
+        GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"),PlayerPawn->GetActorLocation() );
+    }
 }
 
 
 void AShooterAIController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    // APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
-    if(LineOfSightTo(PlayerPawn))
-    {
-        MoveToActor(PlayerPawn , AcceptanceRadius);
-        SetFocus(PlayerPawn);
-    }
-    else
-    {
-        ClearFocus(EAIFocusPriority::Gameplay);
-        StopMovement();
-    }
+    // if(LineOfSightTo(PlayerPawn))
+    // {
+    //     MoveToActor(PlayerPawn , AcceptanceRadius);
+    //     SetFocus(PlayerPawn);
+    // }
+    // else
+    // {
+    //     ClearFocus(EAIFocusPriority::Gameplay);
+    //     StopMovement();
+    // }
 }
 
