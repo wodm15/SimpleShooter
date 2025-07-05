@@ -62,7 +62,10 @@ void AGun::PullTrigger()
 
     //DrawDebugPoint(GetWorld() , Location, 20 , FColor::Red , true );
     FHitResult Hit;
-    bool bScuccess = GetWorld()->LineTraceSingleByChannel(Hit, Location , end , ECollisionChannel::ECC_GameTraceChannel1);
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(this);
+    Params.AddIgnoredActor(GetOwner());
+    bool bScuccess = GetWorld()->LineTraceSingleByChannel(Hit, Location , end , ECollisionChannel::ECC_GameTraceChannel1, Params);
     if(bScuccess)
     {
         FVector ShotDirection = - Rotation.Vector(); //총알이 날아온 방향
