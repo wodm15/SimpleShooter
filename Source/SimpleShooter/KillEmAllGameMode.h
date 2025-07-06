@@ -16,4 +16,7 @@ class SIMPLESHOOTER_API AKillEmAllGameMode : public AMyGameModeBase
 
 public:
 	virtual void PawnKilled(APawn* PawnKilled) override;
+
+private:
+	bool EndGame(bool bIsPlayerWinner);
 };

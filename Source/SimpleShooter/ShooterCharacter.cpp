@@ -109,3 +109,4 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	}
     return DamageToApply;
 }
+
