@@ -39,36 +39,12 @@ void AGun::PullTrigger()
 {
     UGameplayStatics::SpawnEmitterAttached(MuzzleFlash , Mesh , TEXT("MuzzleFlashSocket"));
 
-    APawn* OwnerPawn = Cast<APawn>(GetOwner());
-    if (OwnerPawn == nullptr)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Gun OwnerPawn is nullptr"));
-        return;
-    }
-
-    AController* OwnerPawnController = OwnerPawn->GetController();
-    if (OwnerPawnController == nullptr)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Gun OwnerPawnController is nullptr"));
-        return;
-    }
-
-    FVector Location; //총 위치
-    FRotator Rotation; 
-
-    OwnerPawnController->GetPlayerViewPoint(Location , Rotation);
-
-    FVector end = Location + (Rotation.Vector() * MaxRange);
-
-    //DrawDebugPoint(GetWorld() , Location, 20 , FColor::Red , true );
+    
     FHitResult Hit;
-    FCollisionQueryParams Params;
-    Params.AddIgnoredActor(this);
-    Params.AddIgnoredActor(GetOwner());
-    bool bScuccess = GetWorld()->LineTraceSingleByChannel(Hit, Location , end , ECollisionChannel::ECC_GameTraceChannel1, Params);
+    FVector ShotDirection;
+    bool bScuccess = GunTrace(Hit,ShotDirection);
     if(bScuccess)
     {
-        FVector ShotDirection = - Rotation.Vector(); //총알이 날아온 방향
         // DrawDebugPoint(GetWorld() , Hit.Location , 20 , FColor::Red , true );
         UGameplayStatics::SpawnEmitterAtLocation(
             GetWorld(), 
@@ -81,8 +57,47 @@ void AGun::PullTrigger()
         if(HitActor != nullptr)
         {
             FPointDamageEvent DamageEvent(Damage, Hit , ShotDirection , nullptr ); 
-            HitActor->TakeDamage(Damage, DamageEvent, OwnerPawnController , this);
+            AController* OwnerController = GetOwnerController();
+            HitActor->TakeDamage(Damage, DamageEvent, OwnerController , this);
         }
 
     }
+}
+
+
+bool AGun::GunTrace(FHitResult &Hit, FVector& ShotDirection)
+{
+    AController* OwnerController = GetOwnerController();
+    if (OwnerController == nullptr)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Gun OwnerController is nullptr"));
+        return false;
+    }
+
+    FVector Location; //총 위치
+    FRotator Rotation; 
+
+    OwnerController->GetPlayerViewPoint(Location , Rotation);
+    ShotDirection = - Rotation.Vector(); //총알이 날아온 방향
+
+
+    FVector end = Location + (Rotation.Vector() * MaxRange);
+
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(this);
+    Params.AddIgnoredActor(GetOwner());
+    return GetWorld()->LineTraceSingleByChannel(Hit, Location , end , ECollisionChannel::ECC_GameTraceChannel1, Params);
+}
+
+
+AController* AGun::GetOwnerController() const
+{
+    APawn* OwnerPawn = Cast<APawn>(GetOwner());
+    if (OwnerPawn == nullptr)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Gun OwnerPawn is nullptr"));
+        return nullptr;
+    }
+
+    return OwnerPawn->GetController();
 }
