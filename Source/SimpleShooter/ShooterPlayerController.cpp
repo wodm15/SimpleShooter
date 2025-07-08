@@ -6,11 +6,25 @@
 #include "Blueprint/UserWidget.h"
 
 
+void AShooterPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	
+    HUD = CreateWidget(this , CrossHairHUD);
+
+    if(HUD!=nullptr)
+    {
+        HUD->AddToViewport();
+    }
+}
+
+
 void AShooterPlayerController::GameHasEnded(class AActor* EndGameFocus, bool bIsWinner)
 {
     Super::GameHasEnded(EndGameFocus, bIsWinner);
     UE_LOG(LogTemp, Display, TEXT("we are finished"));
 
+    HUD->RemoveFromViewport();
     if(bIsWinner)
     {
         UUserWidget* WinScreen =  CreateWidget(this , WinScreenClass);
